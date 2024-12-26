@@ -110,7 +110,8 @@ MODEL_MAP = {'Muzo_Mini': 'WiiM Mini',
 
 SOURCES = {'line-in': 'Analog', 
            'optical': 'Toslink',
-           'HDMI': 'HDMI'}
+           'HDMI': 'HDMI',
+           'bluetooth': 'Bluetooth'}
 
 SOURCES_MAP = {'-1': 'Idle', 
                '0': 'Idle', 
