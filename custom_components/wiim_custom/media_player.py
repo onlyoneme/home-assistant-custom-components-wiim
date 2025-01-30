@@ -227,7 +227,7 @@ class WiiMDevice(MediaPlayerEntity):
         self._fw_ver = '1.0.0'
         self._device_model = 'Unknown'
         requester = AiohttpRequester(UPNP_TIMEOUT)
-        self._factory = UpnpFactory(requester, disable_unknown_out_argument_error=True)
+        self._factory = UpnpFactory(requester)
         self._upnp_device = None
         self._service_transport = None
         self._service_control = None
