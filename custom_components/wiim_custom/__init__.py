@@ -8,7 +8,7 @@ import logging
 import voluptuous as vol
 
 from homeassistant.const import ATTR_ENTITY_ID
-from homeassistant.components.media_player.const import MEDIA_TYPE_URL
+from homeassistant.components.media_player.const import MediaType
 from homeassistant.helpers import config_validation as cv
 
 DOMAIN = 'wiim_custom'
@@ -71,7 +71,7 @@ async def async_setup(hass, config):
             for device in entities:
                 if device.entity_id in entity_ids:
                     _LOGGER.debug("**PLAY URL** entity: %s; url: %s", device.entity_id, url)
-                    await device.async_play_media(MEDIA_TYPE_URL, url)
+                    await device.async_play_media(MediaType.URL, url)
         elif service.service == SERVICE_PRESET:
             preset = service.data.get(ATTR_PRESET)
             for device in entities:
