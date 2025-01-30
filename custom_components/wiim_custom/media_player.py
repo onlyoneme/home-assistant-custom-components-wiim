@@ -39,11 +39,8 @@ from homeassistant.components.media_player.browse_media import (
 )
 
 from homeassistant.components.media_player.const import (
-    MEDIA_TYPE_MUSIC,
-    MEDIA_TYPE_URL,
-    REPEAT_MODE_ALL,
-    REPEAT_MODE_OFF,
-    REPEAT_MODE_ONE,
+    MediaType,
+    RepeatMode
 )
 from homeassistant.const import (
     ATTR_ENTITY_ID,
@@ -250,7 +247,7 @@ class WiiMDevice(MediaPlayerEntity):
         self._connect_paused_at = None
         self._idletime_updated_at = None
         self._shuffle = False
-        self._repeat = REPEAT_MODE_OFF
+        self._repeat = RepeatMode.OFF
         self._media_album = None
         self._media_artist = None
         self._media_prev_artist = None
@@ -487,11 +484,11 @@ class WiiMDevice(MediaPlayerEntity):
             }.get(self._player_statdata['LoopMode'], False)
 
             self._repeat = {
-                0: REPEAT_MODE_ALL,
-                1: REPEAT_MODE_ONE,
-                2: REPEAT_MODE_ALL,
-                5: REPEAT_MODE_ONE,
-            }.get(self._player_statdata['LoopMode'], REPEAT_MODE_OFF)
+                0: RepeatMode.ALL,
+                1: RepeatMode.ONE,
+                2: RepeatMode.ALL,
+                5: RepeatMode.ONE,
+            }.get(self._player_statdata['LoopMode'], RepeatMode.OFF)
 
             
             if self._player_statdata['PlayType'] in SOURCES_IDLE or self._player_statdata['CurrentTransportState'] in ['STOPPED', 'NO_MEDIA_PRESENT']: 
@@ -758,8 +755,8 @@ class WiiMDevice(MediaPlayerEntity):
 
     @property
     def media_content_type(self):
-        """Content type of current playing media. Has to be MEDIA_TYPE_MUSIC in order for Lovelace to show both artist and title."""
-        return MEDIA_TYPE_MUSIC		
+        """Content type of current playing media. Has to be MediaType.MUSIC in order for Lovelace to show both artist and title."""
+        return MediaType.MUSIC		
 
 		
     @property
@@ -989,8 +986,8 @@ class WiiMDevice(MediaPlayerEntity):
 
         self._playing_mediabrowser = False
 
-        if not (media_type in [MEDIA_TYPE_MUSIC, MEDIA_TYPE_URL] or media_source.is_media_source_id(media_id)):
-            _LOGGER.warning("For: %s Invalid media type %s. Only %s and %s is supported", self._name, media_type, MEDIA_TYPE_MUSIC, MEDIA_TYPE_URL)
+        if not (media_type in [MediaType.MUSIC, MediaType.URL] or media_source.is_media_source_id(media_id)):
+            _LOGGER.warning("For: %s Invalid media type %s. Only %s and %s is supported", self._name, media_type, MediaType.MUSIC, MediaType.URL)
             await self.async_media_stop()
             return False
             
@@ -1040,11 +1037,11 @@ class WiiMDevice(MediaPlayerEntity):
         media_id_check = media_id.lower()
 
         if media_id_check.startswith('http'):
-            media_type = MEDIA_TYPE_URL
+            media_type = MediaType.URL
 
 
-        if not media_type in [MEDIA_TYPE_URL]:
-            _LOGGER.warning("For: %s Invalid media type %s. Only %s is supported", self._name, media_type, MEDIA_TYPE_URL)
+        if not media_type in [MediaType.URL]:
+            _LOGGER.warning("For: %s Invalid media type %s. Only %s is supported", self._name, media_type, MediaType.URL)
             await self.async_media_stop()
             self._playing_mediabrowser = False
             return False
@@ -1143,18 +1140,18 @@ class WiiMDevice(MediaPlayerEntity):
         """Change the shuffle mode."""
         self._shuffle = shuffle
         if shuffle:
-            if self._repeat == REPEAT_MODE_OFF:
+            if self._repeat == RepeatMode.OFF:
                 mode = '3'
-            elif self._repeat == REPEAT_MODE_ALL:
+            elif self._repeat == RepeatMode.ALL:
                 mode = '2'
-            elif self._repeat == REPEAT_MODE_ONE:
+            elif self._repeat == RepeatMode.ONE:
                 mode = '3' #'5' is buggy
         else:
-            if self._repeat == REPEAT_MODE_OFF:
+            if self._repeat == RepeatMode.OFF:
                 mode = '4'
-            elif self._repeat == REPEAT_MODE_ALL:
+            elif self._repeat == RepeatMode.ALL:
                 mode = '0'
-            elif self._repeat == REPEAT_MODE_ONE:
+            elif self._repeat == RepeatMode.ONE:
                 mode = '1'
         value = await self.call_wiim_httpapi("setPlayerCmd:loopmode:{0}".format(mode), None)
         if value != "OK":
@@ -1165,11 +1162,11 @@ class WiiMDevice(MediaPlayerEntity):
         """Change the repeat mode."""
         #_LOGGER.debug("Setting repeat: %s on %s, %s", repeat, self.entity_id, self._name) 
         self._repeat = repeat
-        if repeat == REPEAT_MODE_OFF:
+        if repeat == RepeatMode.OFF:
             mode = '3' if self._shuffle else '4'
-        elif repeat == REPEAT_MODE_ALL:
+        elif repeat == RepeatMode.ALL:
             mode = '2' if self._shuffle else '0'
-        elif repeat == REPEAT_MODE_ONE:
+        elif repeat == RepeatMode.ONE:
             mode = '3' if self._shuffle else '1' #'5' is buggy
         value = await self.call_wiim_httpapi("setPlayerCmd:loopmode:{0}".format(mode), None)
         if value != "OK":
